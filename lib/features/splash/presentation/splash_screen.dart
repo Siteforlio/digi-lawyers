@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:only_law_app/core/config/env_config.dart';
+import 'package:only_law_app/features/auth/presentation/providers/auth_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -42,9 +44,18 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _navigateToHome() async {
-    await Future.delayed(const Duration(seconds: 3));
+    // Check auth state
+    final authProvider = context.read<AuthProvider>();
+    await authProvider.checkAuthState();
+
+    await Future.delayed(const Duration(seconds: 2));
+
     if (mounted) {
-      context.go('/dashboard');
+      if (authProvider.isAuthenticated) {
+        context.go('/dashboard');
+      } else {
+        context.go('/login');
+      }
     }
   }
 
